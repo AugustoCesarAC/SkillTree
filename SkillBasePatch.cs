@@ -3,21 +3,11 @@ using MelonLoader;
 using ScheduleOne;
 using ScheduleOne.DevUtilities;
 using ScheduleOne.Effects;
-using ScheduleOne.Growing;
 using ScheduleOne.ItemFramework;
 using ScheduleOne.Levelling;
-using ScheduleOne.Money;
-using ScheduleOne.NPCs.CharacterClasses;
 using ScheduleOne.ObjectScripts;
 using ScheduleOne.PlayerScripts;
-using ScheduleOne.Product;
-using ScheduleOne.UI;
-using ScheduleOne.UI.Items;
 using ScheduleOne.UI.Shop;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using TMPro;
 using UnityEngine;
 
 namespace SkillTree
@@ -80,12 +70,12 @@ namespace SkillTree
                         storable.RequiresLevelToPurchase = true;
 
                         patchedCount++;
-                        MelonLogger.Msg($"[SkillTree Unlocker] Item {id} atualizado para Rank: {rankAlvo.Rank}, Tier: {rankAlvo.Tier}");
+                        MelonLogger.Msg($"[SkillTree Unlocker] Item {id} updated to Rank: {rankAlvo.Rank}, Tier: {rankAlvo.Tier}");
                     }
                 }
             }
 
-            MelonLogger.Msg($"[SkillTree Unlocker] Total de {patchedCount} itens remapeados com sucesso.");
+            MelonLogger.Msg($"[SkillTree Unlocker] Total of {patchedCount} items successfully remapped.");
         }
     }
 
@@ -122,7 +112,6 @@ namespace SkillTree
 
                     if (targetItem != null)
                     {
-                        // Cria a instância da classe
                         ShopListing newListing = new ShopListing();
                         newListing.Item = targetItem;
 
@@ -177,7 +166,7 @@ namespace SkillTree
 
                         Traverse.Create(__instance).Method("CreateListingUI", new object[] { newListing }).GetValue();
 
-                        MelonLogger.Msg($"[SkillTree Shop] Item injetado com sucesso: {targetItem.Name}");
+                        MelonLogger.Msg($"[SkillTree Shop] Item successfully injected: {targetItem.Name}");
                     }
                 }
             }
@@ -202,13 +191,9 @@ namespace SkillTree
             [HarmonyPostfix]
             public static void Energizing_Apply_Postfix()
             {
-                // Pega a base da sua skill e adiciona o boost do Energizing (0.15f)
                 float baseWithSkill = SkillPatchStats.PlayerMovespeed.MovespeedBase;
                 PlayerSingleton<PlayerMovement>.Instance.MoveSpeedMultiplier = baseWithSkill + 0.15f;
             }
-
-            // --- LIMPEZA (CLEAR) ---
-            // Aqui corrigimos o erro do jogo de voltar para 1.0f
 
             [HarmonyPatch(typeof(Athletic), "ClearFromPlayer")]
             [HarmonyPostfix]

@@ -1,23 +1,16 @@
 ﻿using FishNet;
-using FluffyUnderware.Curvy.ThirdParty.LibTessDotNet;
 using HarmonyLib;
 using MelonLoader;
-using ScheduleOne;
 using ScheduleOne.DevUtilities;
 using ScheduleOne.GameTime;
 using ScheduleOne.Growing;
 using ScheduleOne.ItemFramework;
 using ScheduleOne.Levelling;
-using ScheduleOne.Map;
 using ScheduleOne.ObjectScripts;
-using ScheduleOne.Persistence;
 using ScheduleOne.Product;
-using ScheduleOne.Property;
-using ScheduleOne.UI.Shop;
 using ScheduleOne.Variables;
 using System.Reflection;
 using UnityEngine;
-using static MelonLoader.MelonLogger;
 using static ScheduleOne.ObjectScripts.Pot;
 
 namespace SkillTree.SkillPatchOperations
@@ -42,7 +35,6 @@ namespace SkillTree.SkillPatchOperations
             {
                 var traverse = Traverse.Create(__instance);
 
-                // === Get Plant (private setter safe) ===
                 var plant = traverse.Property("Plant")?.GetValue();
                 if (plant == null)
                 {
@@ -63,10 +55,8 @@ namespace SkillTree.SkillPatchOperations
                     MelonLogger.Msg("Server harvest processed");
                 }
 
-                // Plant = null (private setter)
                 traverse.Property("Plant")?.SetValue(null);
 
-                // _remainingSoilUses--
                 int remainingUses = traverse.Field("_remainingSoilUses").GetValue<int>() - 1;
                 __instance.SetRemainingSoilUses(remainingUses);
 
@@ -84,12 +74,12 @@ namespace SkillTree.SkillPatchOperations
                     MelonLogger.Msg("Soil still usable: additives preserved");
                 }
 
-                return false; // block original
+                return false; 
             }
             catch (System.Exception ex)
             {
                 MelonLogger.Error($"OnPlantFullyHarvested patch failed: {ex}");
-                return true; // fallback
+                return true; 
             }
         }
     }
@@ -108,11 +98,6 @@ namespace SkillTree.SkillPatchOperations
         [HarmonyPrefix]
         public static void Prefix(Cauldron __instance)
         {
-            // No código original, o jogo faz: CocaineBaseDefinition.GetDefaultInstance(10)
-            // Mas o FishNet/Mirror às vezes dificulta mudar variáveis locais.
-            // O jeito mais fácil é deixar o original rodar e logo após dobrar o que caiu no slot,
-            // OU interceptar a criação do item. 
-            // Vamos usar a interceptação da criação por ser mais limpa:
         }
     }
 
@@ -123,11 +108,10 @@ namespace SkillTree.SkillPatchOperations
         public static void Prefix(QualityItemDefinition __instance, ref int quantity)
         {
             if (CauldronOutputAdd.Add == 10) return;
-            // Se a definição for a do CocaineBase (verificamos pelo nome ou ID) 
-            // e a quantidade solicitada for 10
+
             if (__instance.name.Contains("CocaineBase") && quantity == 10)
             {
-                quantity = CauldronOutputAdd.Add; // Forçamos o jogo a criar 20 unidades
+                quantity = CauldronOutputAdd.Add; 
             }
         }
     }
@@ -160,8 +144,6 @@ namespace SkillTree.SkillPatchOperations
         [HarmonyPrefix]
         public static void Prefix(ref int mins)
         {
-            // Se queremos que demore metade do tempo, 
-            // fazemos cada minuto valer por 2.
             mins = Mathf.RoundToInt(mins * StationTimeLess.TimeAjust);
         }
     }
@@ -172,11 +154,8 @@ namespace SkillTree.SkillPatchOperations
         [HarmonyPostfix]
         public static void Postfix(ref int __result)
         {
-            // Se a duração for válida, entregamos a metade para o jogo
             if (__result > 0)
             {
-                // Usamos StationTimeLess.TimeAjust ou apenas / 2
-                // Se TimeAjust for 2.0, dividimos por ele.
                 __result = Mathf.Max(1, Mathf.RoundToInt(__result / StationTimeLess.TimeAjust));
             }
         }
@@ -194,17 +173,14 @@ namespace SkillTree.SkillPatchOperations
     [HarmonyPatch(typeof(MixingStation))] // Certifique-se que o nome da classe é MixStation
     public static class MixStationPatch
     {
-        // 1. Alterar a quantidade de Output para 2x
         [HarmonyPatch("GetMixQuantity")]
         [HarmonyPostfix]
         public static void Postfix(MixingStation __instance, ref int __result)
         {
-            // Se o resultado original já era 0, não fazemos nada e não logamos
             if (__result <= 0) return;
 
             if (__instance.ProductSlot == null || __instance.MixerSlot == null) return;
 
-            // Cálculo limpo para evitar o loop infinito de dobrar o valor
             int qtyProduct = __instance.ProductSlot.Quantity;
             int qtyMixer = __instance.MixerSlot.Quantity;
             int originalMax = Mathf.Min(Mathf.Min(qtyProduct, qtyMixer), __instance.MaxMixQuantity);
@@ -221,7 +197,6 @@ namespace SkillTree.SkillPatchOperations
         {
             if (MixOutputAdd.Add == 1) return;
 
-            // Se não há operação ocorrendo ou o resultado é 0, sai
             if (__instance.CurrentMixOperation == null || __result <= 0) return;
             int tempoCalculado = (__instance.MixTimePerItem * __instance.CurrentMixOperation.Quantity) / MixOutputAdd.TimeAjust;
 
@@ -247,14 +222,12 @@ namespace SkillTree.SkillPatchOperations
 
         public static void UpdateAllRacks()
         {
-            // Busca todos os racks ativos na cena atual
             DryingRack[] racks = GameObject.FindObjectsOfType<DryingRack>();
             foreach (var rack in racks)
             {
-                // Chamamos a lógica de redimensionamento
                 DryingRack_Patch.ApplyCapacityUpdate(rack);
             }
-            MelonLogger.Msg($"[DryingRack] Capacidade atualizada para todos os {racks.Length} racks ativos.");
+            MelonLogger.Msg($"[DryingRack] Capacity updated for all active {racks.Length} racks.");
         }
     }
 
@@ -357,12 +330,9 @@ namespace SkillTree.SkillPatchOperations
         [HarmonyPrefix]
         public static void Prefix(ShroomColony __instance, ref float change)
         {
-            // Change the diference before ADD in percentage
             if (change > 0f && GrowthSpeedUp.Add > 0f)
             {
-                //float before = change;
                 change += change * GrowthSpeedUp.Add;
-                //MelonLogger.Msg($"Mushroom Growth Before: {before} | Now: {change}");
             }
         }
     }
@@ -416,19 +386,15 @@ namespace SkillTree.SkillPatchOperations
             if (__instance.Pot != null)
             {
                 string potName = __instance.Pot.Name.ToString();
-                float baseQuality = 0.5f; // Valor padrão do jogo
+                float baseQuality = 0.5f;
                 float currentQuality = __instance.QualityLevel;
 
-                // 1. Definimos a qualidade base de acordo com o pote
-                // Usamos os valores que você quer como alvo final
                 if (potName.Equals("Grow Tent")) baseQuality = 0.1f + BetterGrowTent.Add;
                 else if (potName.Equals("Plastic Pot")) baseQuality = 0.26f;
                 else if (potName.Equals("Moisture-Preserving Pot")) baseQuality = 0.26f;
                 else if (potName.Equals("Air Pot")) baseQuality = 0.5f;
-                else baseQuality = 0.1f; // Padrão para potes desconhecidos/ruins
+                else baseQuality = 0.1f; 
 
-                // 2. SOMAMOS a sua Skill à base do pote
-                // Assim, se for Air Pot (0.8) + Skill (0.2), a planta já nasce com 1.0!
                 float finalQuality = baseQuality + QualityUP.Add;
 
                 ///
@@ -449,7 +415,7 @@ namespace SkillTree.SkillPatchOperations
                                 if (additive == null)
                                     continue;
 
-                                MelonLogger.Msg("Nome do additivo: " + additive.Name.ToString().ToLower());
+                                MelonLogger.Msg("Additive Name: " + additive.Name.ToString().ToLower());
 
                                 switch (additive.Name.ToString().ToLower().Trim())
                                 {
@@ -518,7 +484,6 @@ namespace SkillTree.SkillPatchOperations
                     return;
                 }
 
-                // ⚠️ Ajuste o nome da coleção se necessário
                 var additives = __instance.Pot.AppliedAdditives;
                 if (additives == null || additives.Count == 0)
                 {
@@ -571,7 +536,7 @@ namespace SkillTree.SkillPatchOperations
             var traverse = Traverse.Create(__instance);
             float currentMultiplier = __instance.YieldMultiplier;
 
-            int originalBase; // Valor base da planta
+            int originalBase;
             originalBase = (int)traverse.Field("BaseYieldQuantity").GetValue();
 
             if (Mathf.Approximately(currentMultiplier, 1.0f) && YieldAdd.Add != 0 && originalBase == 12)

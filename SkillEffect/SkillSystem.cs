@@ -6,7 +6,6 @@ using ScheduleOne.PlayerScripts;
 using ScheduleOne.Property;
 using SkillTree.Json;
 using SkillTree.SkillPatchSocial;
-using SkillTree.SkillPatchStats;
 using System.Reflection;
 using UnityEngine;
 
@@ -121,7 +120,7 @@ namespace SkillTree.SkillEffect
                     break;
 
                 case "MoreQualityMushroom":
-                    SkillPatchOperations.QualityMushroomUP.Add = (data.MoreQualityMushroom == 2 ? 0.3f : 0f);
+                    SkillPatchOperations.QualityMushroomUP.Add = (data.MoreQualityMushroom == 1 ? 0.3f : 0f);
                     break;
 
                 case "AbsorbentSoil":
@@ -154,7 +153,7 @@ namespace SkillTree.SkillEffect
                 case "CityEvolving":
                     {
                         CustomerCache.FillCache(customerList.ToList());
-                        float multiplier = 1.0f + (data.CityEvolving * 0.15f);
+                        float multiplier = 1.0f + (data.CityEvolving * 0.10f);
 
                         foreach (Customer customer in customerList)
                         {
@@ -194,7 +193,7 @@ namespace SkillTree.SkillEffect
                     break;
                 case "MoreATMLimit":
                     {
-                        SkillPatchSocial.ATMConfig.MaxWeeklyLimit = 10000f + (data.MoreATMLimit * 1500f);
+                        SkillPatchSocial.ATMConfig.MaxWeeklyLimit = 10000f + (data.MoreATMLimit * 1250f);
                         MelonLogger.Msg($"ATM Deposit Weekly Limit: ${SkillPatchSocial.ATMConfig.MaxWeeklyLimit}");
                         break;
                     }

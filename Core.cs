@@ -2,10 +2,7 @@
 using ScheduleOne.Economy;
 using ScheduleOne.GameTime;
 using ScheduleOne.Levelling;
-using ScheduleOne.ObjectScripts;
 using ScheduleOne.PlayerScripts;
-using ScheduleOne.Tools;
-using ScheduleOne.UI.Management;
 using SkillTree.Json;
 using SkillTree.SkillEffect;
 using SkillTree.UI;
@@ -31,7 +28,6 @@ namespace SkillTree
 
         private float timer = 2f;
 
-        //SkillTree
         private SkillTreeData skillData;
         private SkillTreeUI skillTreeUI;
         private int skillPointValid = 0;
@@ -46,10 +42,9 @@ namespace SkillTree
         {
             LoggerInstance.Msg("SkillTree Initialized.");
             Instance = this;
-            // Cria um Harmony com ID único
-            var harmony = new HarmonyLib.Harmony("com.gus.skilltree");
 
-            // Aplica todos os patches da assembly atual
+            var harmony = new HarmonyLib.Harmony("com.reizor.skilltree");
+
             harmony.PatchAll();
 
             LoggerInstance.Msg("Harmony patches applied.");
@@ -154,13 +149,11 @@ namespace SkillTree
             int currentTier = levelManager.Tier - 1;
 
             int maxPointsPossible = (currentRank * 6) + currentTier;
-            MelonLogger.Msg($"maxPointsPossible {maxPointsPossible}");
             int maxPointsJson = skillData.StatsPoints + skillData.OperationsPoints + skillData.SocialPoints + skillData.UsedSkillPoints;
-            MelonLogger.Msg($"maxPointsJson {maxPointsJson}");
 
             if (maxPointsPossible != maxPointsJson && !levelUp)
             {
-                MelonLogger.Msg("Desync detectado! Sincronizando pontos com o XP salvo no jogo...");
+                MelonLogger.Msg("Desync detected! Synchronizing points with saved XP in the game...");
                 string path = SkillTreeSaveManager.GetDynamicPath();
                 if (File.Exists(path))
                     File.Delete(path);
@@ -187,10 +180,10 @@ namespace SkillTree
             lastProcessedTier = levelManager.Tier;
             lastProcessedRank = levelManager.Rank;
 
-            MelonLogger.Msg("skillPointValid " + skillPointValid);
+            //MelonLogger.Msg("skillPointValid " + skillPointValid);
 
             int totalSkillPoint = skillData.StatsPoints + skillData.OperationsPoints + skillData.SocialPoints + skillData.UsedSkillPoints;
-            MelonLogger.Msg("totalSkillPoint " + totalSkillPoint);
+            //MelonLogger.Msg("totalSkillPoint " + totalSkillPoint);
 
             if (skillPointValid > 0)
             {
@@ -214,7 +207,6 @@ namespace SkillTree
                             break;
                     }
                 }
-                //SkillTreeSaveManager.Save(skillData);
 
                 if (skillTreeUI == null)
                     skillTreeUI = new SkillTreeUI(skillData);
@@ -235,7 +227,6 @@ namespace SkillTree
 
             GUI.skin = skillTreeUI.Skin;
 
-            // evita foco bugado ao clicar fora
             if (Event.current.type == EventType.MouseDown)
                 GUI.FocusControl(null);
 

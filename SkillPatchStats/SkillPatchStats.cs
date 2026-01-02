@@ -1,37 +1,18 @@
 ﻿using HarmonyLib;
 using MelonLoader;
 using ScheduleOne.DevUtilities;
-using ScheduleOne.Effects;
 using ScheduleOne.Growing;
 using ScheduleOne.Interaction;
 using ScheduleOne.Levelling;
-using ScheduleOne.Money;
 using ScheduleOne.ObjectScripts;
-using ScheduleOne.PlayerScripts;
 using ScheduleOne.PlayerScripts.Health;
-using ScheduleOne.Product;
-using ScheduleOne.Property;
 using ScheduleOne.Quests;
 using ScheduleOne.Tools;
-using ScheduleOne.UI;
-using System.Reflection;
-using System.Xml.Linq;
 using UnityEngine;
-using UnityEngine.Rendering;
-using static SkillTree.Core;
 
 namespace SkillTree.SkillPatchStats
 {
     // BASE VALUES
-    public static class PlayerHealthConfig
-    {
-        public static float MaxHealth = 100f;
-    }
-    public static class PlayerXPConfig
-    {
-        public static float XpBase = 100f;
-        public static float XpBase2 = 100f;
-    }
     public static class PlayerMovespeed
     {
         public static float MovespeedBase = 1f;
@@ -45,10 +26,14 @@ namespace SkillTree.SkillPatchStats
     /// <summary>
     /// CHANGE HEALTH BASE
     /// </summary>
+    public static class PlayerHealthConfig
+    {
+        public static float MaxHealth = 100f;
+    }
+
     [HarmonyPatch(typeof(PlayerHealth))]
     public class PatchPlayerHealth
     {
-        // Patch para SetHealth
         [HarmonyPatch("SetHealth")]
         [HarmonyPrefix]
         public static bool Prefix_SetHealth(PlayerHealth __instance, float health)
@@ -58,7 +43,6 @@ namespace SkillTree.SkillPatchStats
             return false;
         }
 
-        // Patch para RecoverHealth
         [HarmonyPatch("RecoverHealth")]
         [HarmonyPrefix]
         public static bool Prefix_RecoverHealth(PlayerHealth __instance, float recovery)
@@ -70,7 +54,6 @@ namespace SkillTree.SkillPatchStats
             return false;
         }
 
-        // Patch para o dano (importante para não clipar em 100)
         [HarmonyPatch("RpcLogic___TakeDamage_3505310624")]
         [HarmonyPrefix]
         public static bool Prefix_TakeDamage(PlayerHealth __instance, float damage)
@@ -87,14 +70,11 @@ namespace SkillTree.SkillPatchStats
             return false;
         }
 
-        // Helper para injetar o valor na propriedade protected
         private static void SetInternalHealth(PlayerHealth instance, float value)
         {
-            // Tenta o backing field da propriedade automática
             var field = AccessTools.Field(typeof(PlayerHealth), "<CurrentHealth>k__BackingField");
             field?.SetValue(instance, value);
 
-            // Dispara o evento de UI
             instance.onHealthChanged?.Invoke(value);
         }
     }
@@ -103,6 +83,12 @@ namespace SkillTree.SkillPatchStats
     /// <summary>
     /// INCREASE XP GAIN
     /// </summary>
+    public static class PlayerXPConfig
+    {
+        public static float XpBase = 100f;
+        public static float XpBase2 = 100f;
+    }
+
     [HarmonyPatch(typeof(LevelManager), "AddXP")]
     public class PatchLevelManager
     {
@@ -120,7 +106,7 @@ namespace SkillTree.SkillPatchStats
                 _jaProcessado = true;
                 int xpOriginal = xp;
                 xp = Mathf.RoundToInt(xp * multiplicador);
-                MelonLogger.Msg($"[XP] Aplicado: {xpOriginal} -> {xp} (Base: {PlayerXPConfig.XpBase}%)");
+                MelonLogger.Msg($"[XP] Apply: {xpOriginal} -> {xp} (Base: {PlayerXPConfig.XpBase}%)");
                 MelonLogger.Msg("Total XP Now: " + (__instance.TotalXP + xp));
             }
         }
@@ -147,27 +133,21 @@ namespace SkillTree.SkillPatchStats
 
             if (!PlayerXpMoney.XpMoney)
                 return;
-            // 1. Calculamos o valor total recebido (Base + Bônus)
+
             float valorTotalDinheiro = __instance.Payment + bonusTotal;
 
             if (valorTotalDinheiro > 0)
             {
-                // 2. Calculamos 5% desse valor para converter em XP
-                // Ex: Ganhou $1000 -> Ganha 50 XP base
                 int xpGanhaPeloDinheiro = Mathf.RoundToInt(valorTotalDinheiro * 0.05f);
 
                 if (xpGanhaPeloDinheiro > 0)
                 {
-                    // 3. Tentamos encontrar o LevelManager para dar o XP
-                    // Usando a lógica de instância que funciona no seu jogo
                     LevelManager levelManager = LevelManager.Instance;
 
                     if (levelManager != null)
                     {
-                        MelonLogger.Msg($"[Contrato] Pagamento de ${valorTotalDinheiro} convertido em {xpGanhaPeloDinheiro} XP base.");
+                        MelonLogger.Msg($"[Contract] Payment of ${valorTotalDinheiro} converted into {xpGanhaPeloDinheiro} base XP.");
 
-                        // Chamamos o método de XP do jogo
-                        // Note que o seu patch anterior de bônus de XP vai agir aqui também!
                         levelManager.AddXP(xpGanhaPeloDinheiro);
                         _jaProcessado = true;
                     }
@@ -263,7 +243,6 @@ namespace SkillTree.SkillPatchStats
 
                 float currentTime = NetworkSingleton<ScheduleOne.GameTime.TimeManager>.Instance.CurrentTime;
 
-                // Se estiver no horário da madrugada (0-700), mantém o texto padrão "Sleep"
                 if (currentTime >= 0 && currentTime < 700)
                     return true;
                 else if (!CanUseBedSkill() && currentTime <= 1800)

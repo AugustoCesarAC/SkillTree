@@ -1,8 +1,5 @@
-﻿using MelonLoader;
-using SkillTree.Json;
+﻿using SkillTree.Json;
 using SkillTree.SkillEffect;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
@@ -164,7 +161,6 @@ namespace SkillTree.UI
                 int parentCurrentValue = GetSkillValue(skill.Parent);
                 int parentMaxLevel = GetMaxLevelOfSkill(skill.Parent);
 
-                // Só libera se o valor atual do pai for IGUAL ao máximo do pai
                 parentUnlocked = parentCurrentValue >= parentMaxLevel;
             }
 
@@ -172,10 +168,8 @@ namespace SkillTree.UI
 
             GUILayout.BeginHorizontal();
 
-            // indentação da árvore
             GUILayout.Space(depth * 20);
 
-            // nome da skill
             GUILayout.Label($"{skill.Name} ({value}/{maxLevel})", GUILayout.Width(180));
 
             if (value < maxLevel)
@@ -201,7 +195,6 @@ namespace SkillTree.UI
 
             DrawTooltip(skill.Description, lineRect);
 
-            // desenha subs
             if (value > 0)
             {
                 foreach (var child in skillFields)
@@ -318,8 +311,6 @@ namespace SkillTree.UI
                 float padding = 10f;
                 float tooltipWidth = size.x + padding;
                 float tooltipHeight = size.y + padding;
-                //float tooltipWidth = 310;
-                //float tooltipHeight = 30;
 
                 Rect tooltipRect = new Rect(
                     anchorRect.x + 20,
@@ -367,9 +358,6 @@ namespace SkillTree.UI
             return (int)field.GetValue(editData);
         }
 
-        // =========================
-        // Data copy helpers
-        // =========================
         private SkillTreeData Clone(SkillTreeData source)
         {
             string json = JsonUtility.ToJson(source);
@@ -476,17 +464,13 @@ namespace SkillTree.UI
 
         public void AddPoints(int stats, int ops, int social)
         {
-            // Adiciona os pontos ao editData (o que aparece na tela agora)
             this.editData.StatsPoints += stats;
             this.editData.OperationsPoints += ops;
             this.editData.SocialPoints += social;
 
-            // Atualiza também o originalData para que a interface saiba 
-            // que esses pontos agora fazem parte da "base" oficial.
             this.originalData.StatsPoints += stats;
             this.originalData.OperationsPoints += ops;
             this.originalData.SocialPoints += social;
-
 
             SkillTreeSaveManager.Save(this.editData);
 
