@@ -6,6 +6,7 @@ using ScheduleOne.PlayerScripts;
 using ScheduleOne.Property;
 using SkillTree.Json;
 using SkillTree.SkillPatchSocial;
+using SkillTree.SkillPatchStats;
 using System.Reflection;
 using UnityEngine;
 
@@ -70,13 +71,13 @@ namespace SkillTree.SkillEffect
                     }
                 case "MoreXP":
                     {
-                        SkillPatchStats.PlayerXPConfig.XpBase = 100f + (data.MoreXP * 15f);
+                        SkillPatchStats.PlayerXPConfig.XpBase = 100f + (data.MoreXP * 5f);
                         MelonLogger.Msg($"XP Base atualizada para: {SkillPatchStats.PlayerXPConfig.XpBase}%");
                         break;
                     }
                 case "MoreXP2":
                     {
-                        SkillPatchStats.PlayerXPConfig.XpBase = 100f + ((data.MoreXP + data.MoreXP2) * 15f);
+                        SkillPatchStats.PlayerXPConfig.XpBase = 100f + ((data.MoreXP + data.MoreXP2) * 5f);
                         MelonLogger.Msg($"XP Base atualizada para: {SkillPatchStats.PlayerXPConfig.XpBase}%");
                         break;
                     }
@@ -100,11 +101,11 @@ namespace SkillTree.SkillEffect
                     break;
 
                 case "GrowthSpeed":
-                    SkillPatchOperations.GrowthSpeedUp.Add = (data.GrowthSpeed * 0.075f);
+                    SkillPatchOperations.GrowthSpeedUp.Add = (data.GrowthSpeed * 0.025f);
                     break;
 
                 case "GrowthSpeed2":
-                    SkillPatchOperations.GrowthSpeedUp.Add = ((data.GrowthSpeed + data.GrowthSpeed2) * 0.075f);
+                    SkillPatchOperations.GrowthSpeedUp.Add = ((data.GrowthSpeed + data.GrowthSpeed2) * 0.025f);
                     break;
 
                 case "MoreYield":
@@ -112,7 +113,11 @@ namespace SkillTree.SkillEffect
                     break;
 
                 case "MoreQuality":
-                    SkillPatchOperations.QualityUP.Add = (data.MoreQuality * 0.10f);
+                    SkillPatchOperations.QualityUP.Add = (data.MoreQuality * 0.15f);
+                    break;
+
+                case "MoreQualityMeth":
+                    SkillPatchOperations.MethQualityAdd.Add = (data.MoreQualityMeth == 1);
                     break;
 
                 case "MoreQualityMushroom":
@@ -120,16 +125,17 @@ namespace SkillTree.SkillEffect
                     break;
 
                 case "AbsorbentSoil":
-                    SkillPatchOperations.AbsorbentSoil.Add = (data.AbsorbentSoil == 3);
+                    SkillPatchOperations.AbsorbentSoil.Add = (data.AbsorbentSoil == 2);
                     break;
 
-                case "MoreMixOutput":
-                    SkillPatchOperations.MixOutputAdd.Add = (data.MoreMixOutput * 2);
+                case "MoreMixAndDryingRackOutput":
+                    SkillPatchOperations.StackItem2xFix.Add = true;
+                    SkillPatchOperations.MixOutputAdd.Add = (data.MoreMixAndDryingRackOutput * 2);
                     break;
 
                 case "ChemistStationQuick":
                     SkillPatchOperations.StationTimeLess.TimeAjust = (data.ChemistStationQuick * 1.5f);
-                    SkillPatchOperations.MixOutputAdd.TimeAjust = (data.MoreMixOutput * 2);
+                    SkillPatchOperations.MixOutputAdd.TimeAjust = (data.MoreMixAndDryingRackOutput * 2);
                     break;
 
                 case "MoreCauldronOutput":
@@ -148,7 +154,7 @@ namespace SkillTree.SkillEffect
                 case "CityEvolving":
                     {
                         CustomerCache.FillCache(customerList.ToList());
-                        float multiplier = 1.0f + (data.CityEvolving * 0.10f);
+                        float multiplier = 1.0f + (data.CityEvolving * 0.15f);
 
                         foreach (Customer customer in customerList)
                         {
@@ -163,7 +169,7 @@ namespace SkillTree.SkillEffect
                                 //MelonLogger.Msg($"[CityEvolving] {key}: {baseMin} -> {customer.CustomerData.MinWeeklySpend}");
                             }
                         }
-                        MelonLogger.Msg($"Weekly spend incresed by {1.0f + (data.CityEvolving * 0.10f)}%");
+                        MelonLogger.Msg($"Weekly spend incresed by {1.0f + (data.CityEvolving * 0.15f)}%");
                     }
                     break;
 
@@ -188,7 +194,7 @@ namespace SkillTree.SkillEffect
                     break;
                 case "MoreATMLimit":
                     {
-                        SkillPatchSocial.ATMConfig.MaxWeeklyLimit = 10000f + (data.MoreATMLimit * 1000f);
+                        SkillPatchSocial.ATMConfig.MaxWeeklyLimit = 10000f + (data.MoreATMLimit * 1500f);
                         MelonLogger.Msg($"ATM Deposit Weekly Limit: ${SkillPatchSocial.ATMConfig.MaxWeeklyLimit}");
                         break;
                     }
@@ -224,9 +230,8 @@ namespace SkillTree.SkillEffect
                     }
                 case "BetterSupplier":
                     {
-                        SkillPatchSocial.SupplierUp.SupplierInc *= (data.BetterSupplier * 1.35f);
-                        SkillPatchSocial.SupplierUp.SupplierLimit *= (data.BetterSupplier * 2);
-                        MelonLogger.Msg($"Dealer MaxCustomer: {SkillPatchSocial.DealerUpCustomer.MaxCustomer}");
+                        SkillPatchSocial.SupplierUp.SupplierInc = 1f + (1f * (data.BetterSupplier * 0.675f));
+                        SkillPatchSocial.SupplierUp.SupplierLimit = (int)(10 + (10 * (data.BetterSupplier * 0.5f)));
                         break;
                     }
             }
@@ -244,7 +249,7 @@ namespace SkillTree.SkillEffect
 
         private static bool ValidDealer(Dealer dealer)
         {
-            if (dealer.name.ToLower().Contains("CartelDealer"))
+            if (dealer.name.ToLower().Contains("carteldealer"))
                 return false;
             return true;
         }

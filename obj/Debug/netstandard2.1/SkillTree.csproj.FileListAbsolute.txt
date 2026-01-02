@@ -177,3 +177,4 @@ C:\Users\acsil\OneDrive\Documentos\0ModMelonLoader\SkillTree\obj\Debug\netstanda
 C:\Users\acsil\OneDrive\Documentos\0ModMelonLoader\SkillTree\obj\Debug\netstandard2.1\SkillTree.csproj.Up2Date
 C:\Users\acsil\OneDrive\Documentos\0ModMelonLoader\SkillTree\obj\Debug\netstandard2.1\SkillTree.dll
 C:\Users\acsil\OneDrive\Documentos\0ModMelonLoader\SkillTree\obj\Debug\netstandard2.1\SkillTree.pdb
+C:\Users\acsil\OneDrive\Documentos\0ModMelonLoader\SkillTree\obj\Debug\netstandard2.1\SkillTree.sourcelink.json

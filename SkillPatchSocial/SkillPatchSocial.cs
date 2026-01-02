@@ -8,6 +8,7 @@ using ScheduleOne.UI;
 using ScheduleOne.UI.ATM;
 using ScheduleOne.UI.Phone;
 using ScheduleOne.UI.Phone.Messages;
+using SkillTree.SkillPatchStats;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -39,7 +40,7 @@ namespace SkillTree.SkillPatchSocial
                 }
             }
             IsLoaded = true;
-            MelonLogger.Msg("Memória de gastos dos clientes armazenada com sucesso!");
+            MelonLogger.Msg("Customer spending history successfully stored!");
         }
     }
 
@@ -76,11 +77,6 @@ namespace SkillTree.SkillPatchSocial
     public static class DealerUpCustomer
     {
         public static int MaxCustomer = 8;
-    }
-    public static class SupplierUp
-    {
-        public static float SupplierInc = 1;
-        public static int SupplierLimit = 10;
     }
     // BASE VALUES
 
@@ -290,23 +286,24 @@ namespace SkillTree.SkillPatchSocial
         }
     }
 
+    /// <summary>
+    /// BETTER SUPPLIER
+    /// </summary>
+    public static class SupplierUp
+    {
+        public static float SupplierInc = 1;
+        public static int SupplierLimit = 10;
+    }
+
     [HarmonyPatch(typeof(PhoneShopInterface))]
     public class PhoneShopGlobalPatch
     {
-        [HarmonyPatch("Open")]
-        [HarmonyPrefix]
-        public static void Open_Prefix(ref float _orderLimit)
-        {
-            _orderLimit *= SupplierUp.SupplierInc;
-        }
-
         [HarmonyPatch("CanConfirmOrder")]
         [HarmonyPostfix]
         public static void CanConfirmOrder_Postfix(PhoneShopInterface __instance, ref bool __result)
         {
             if (__result) return;
 
-            // Acessamos o carrinho privado e o limite de ordem via Reflection
             var cartField = typeof(PhoneShopInterface).GetField("_cart", BindingFlags.NonPublic | BindingFlags.Instance);
             var limitField = typeof(PhoneShopInterface).GetField("orderLimit", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -324,8 +321,6 @@ namespace SkillTree.SkillPatchSocial
                     totalPrice += entry.Listing.Price * entry.Quantity;
                 }
 
-                // Nova regra de validação:
-                // Preço dentro do limite (que já foi aumentado no Open) E itens até 20
                 if (totalPrice > 0f && totalPrice <= currentOrderLimit && totalCount <= SupplierUp.SupplierLimit)
                 {
                     __result = true;
@@ -334,6 +329,23 @@ namespace SkillTree.SkillPatchSocial
         }
     }
 
+    [HarmonyPatch(typeof(Supplier), "GetDeadDropLimit")]
+    public static class Supplier_GetDeadDropLimit_Patch
+    {
+        [HarmonyPrefix]
+        public static bool Prefix(Supplier __instance, ref float __result)
+        {
+            if (SupplierUp.SupplierLimit == 10) return true; 
+
+            __result = __instance.MaxOrderLimit * SupplierUp.SupplierInc;
+
+            return false; 
+        }
+    }
+
+    /// <summary>
+    /// BETTER BUSINESS
+    /// </summary>
     public static class BetterBusiness
     {
         public static float Add = 0f;
@@ -367,7 +379,7 @@ namespace SkillTree.SkillPatchSocial
                     if (newInterval > oldInterval)
                     {
                         // Calculate installment (1/6th of total for a 24h cycle)
-                        float installment = op.amount / 6f;
+                        float installment = Mathf.Ceil(op.amount / 6f);
 
                         if (FishNet.InstanceFinder.IsServer)
                         {

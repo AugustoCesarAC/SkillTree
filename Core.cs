@@ -26,7 +26,7 @@ namespace SkillTree
         private PlayerMovement playerMovement;
         private Player localPlayer;
         private PlayerCamera playerCamera;
-        private PlayerInventory playerInventory;        
+        private PlayerInventory playerInventory;
         private Customer[] customerList;
 
         private float timer = 2f;
@@ -87,7 +87,7 @@ namespace SkillTree
 
             if (!waiting)
                 if (!WaitTime())
-                    return;          
+                    return;
 
             bool treeUiChange = false;
 
@@ -153,8 +153,10 @@ namespace SkillTree
             int currentRank = (int)levelManager.Rank;
             int currentTier = levelManager.Tier - 1;
 
-            int maxPointsPossible = (currentRank * 5) + (currentTier + currentRank);
+            int maxPointsPossible = (currentRank * 6) + currentTier;
+            MelonLogger.Msg($"maxPointsPossible {maxPointsPossible}");
             int maxPointsJson = skillData.StatsPoints + skillData.OperationsPoints + skillData.SocialPoints + skillData.UsedSkillPoints;
+            MelonLogger.Msg($"maxPointsJson {maxPointsJson}");
 
             if (maxPointsPossible != maxPointsJson && !levelUp)
             {
@@ -169,19 +171,20 @@ namespace SkillTree
             if (currentRank == 0 && currentTier == 0)
                 return;
 
-            if (levelUp && currentTier == lastProcessedTier && (int)levelManager.Rank == (int)lastProcessedRank)
+            if (levelUp && currentTier == (lastProcessedTier - 1) && (int)levelManager.Rank == (int)lastProcessedRank)
                 return;
+
             else if (levelUp)
                 MelonLogger.Msg("Level Up Detected! Skill points updated.");
 
             if (levelUp)
             {
                 skillPointValid = 1;
-                if (lastProcessedTier == 5 && currentTier == 1)
+                if (lastProcessedTier == 5)
                     skillPointValid = 2;
             }
 
-            lastProcessedTier = currentTier;
+            lastProcessedTier = levelManager.Tier;
             lastProcessedRank = levelManager.Rank;
 
             MelonLogger.Msg("skillPointValid " + skillPointValid);
@@ -219,7 +222,7 @@ namespace SkillTree
                 if (skillTreeUI != null)
                     skillTreeUI.AddPoints(statsGained, opsGained, socialGained);
 
-                MelonLogger.Msg($"[SkillTree] Processed: Rank {levelManager.Rank} Tier {currentTier}. Gains: Stats+{statsGained} Operations+{opsGained} Social+{socialGained}");
+                MelonLogger.Msg($"[SkillTree] Processed: Rank {levelManager.Rank} Tier {levelManager.Tier}. Gains: Stats+{statsGained} Operations+{opsGained} Social+{socialGained}");
             }
         }
 

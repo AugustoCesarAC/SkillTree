@@ -183,7 +183,7 @@ namespace SkillTree.SkillPatchStats
     }
 
     /// <summary>
-    /// Sleep System
+    /// SLEEP SYSTEM
     /// </summary>
     public static class SkipSchedule
     {
@@ -207,9 +207,8 @@ namespace SkillTree.SkillPatchStats
         public static string GetTimeRemaining(float currentTime)
         {
             int next = GetNextSchedule();
-            if (next == 0) next = 2400; // Para conta de subtração
+            if (next == 0) next = 2400; 
 
-            // Cálculo de horas e minutos para exibição
             int currentTotalMin = ((int)currentTime / 100 * 60) + ((int)currentTime % 100);
             int nextTotalMin = (next / 100 * 60) + (next % 100);
 
@@ -235,12 +234,15 @@ namespace SkillTree.SkillPatchStats
         public static class Bed_AlwaysAllow
         {
             [HarmonyPrefix]
-            public static bool Prefix(out string noSleepReason, ref bool __result)
+            public static bool Prefix(ref bool __result)
             {
-                noSleepReason = null;
+                float currentTime = NetworkSingleton<ScheduleOne.GameTime.TimeManager>.Instance.CurrentTime;
 
                 if (!AllowSleepAthEne.Add)
-                    return true;          
+                    return true;
+
+                if (currentTime > 700 && currentTime < 1800 && !SkipSchedule.Add)
+                    return true;
 
                 __result = true;
                 return false;

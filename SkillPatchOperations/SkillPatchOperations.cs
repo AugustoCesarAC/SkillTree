@@ -15,6 +15,7 @@ using ScheduleOne.Product;
 using ScheduleOne.Property;
 using ScheduleOne.UI.Shop;
 using ScheduleOne.Variables;
+using System.Reflection;
 using UnityEngine;
 using static MelonLoader.MelonLogger;
 using static ScheduleOne.ObjectScripts.Pot;
@@ -92,8 +93,6 @@ namespace SkillTree.SkillPatchOperations
             }
         }
     }
-
-    
 
     /// <summary>
     /// INCREASE CAULDRON OUTPUT
@@ -184,7 +183,7 @@ namespace SkillTree.SkillPatchOperations
     }
 
     /// <summary>
-    /// INCREASE MIXSTATION OUTPUT
+    /// INCREASE MIXSTATION OUTPUT AND FIXS
     /// </summary>
     public static class MixOutputAdd
     {
@@ -224,13 +223,94 @@ namespace SkillTree.SkillPatchOperations
 
             // Se não há operação ocorrendo ou o resultado é 0, sai
             if (__instance.CurrentMixOperation == null || __result <= 0) return;
-
-            // Calculamos o tempo baseado na quantidade da operação atual (que já estará dobrada pelo patch acima)
-            // E dividimos por 2 para ser mais rápido
             int tempoCalculado = (__instance.MixTimePerItem * __instance.CurrentMixOperation.Quantity) / MixOutputAdd.TimeAjust;
 
-            // Garante que o tempo seja ao menos 1 (para não bugar o timer do jogo)
             __result = Mathf.Max(1, tempoCalculado);
+        }
+    }
+
+    public static class StackItem2xFix
+    {
+        private static bool _add = false;
+        public static bool Add
+        {
+            get => _add;
+            set
+            {
+                if (_add != value)
+                {
+                    _add = value;
+                    UpdateAllRacks();
+                }
+            }
+        }
+
+        public static void UpdateAllRacks()
+        {
+            // Busca todos os racks ativos na cena atual
+            DryingRack[] racks = GameObject.FindObjectsOfType<DryingRack>();
+            foreach (var rack in racks)
+            {
+                // Chamamos a lógica de redimensionamento
+                DryingRack_Patch.ApplyCapacityUpdate(rack);
+            }
+            MelonLogger.Msg($"[DryingRack] Capacidade atualizada para todos os {racks.Length} racks ativos.");
+        }
+    }
+
+    [HarmonyPatch(typeof(DryingRack), "InitializeGridItem")]
+    public static class DryingRack_Patch
+    {
+        [HarmonyPostfix]
+        public static void Postfix(DryingRack __instance)
+        {
+            ApplyCapacityUpdate(__instance);
+        }
+
+        public static void ApplyCapacityUpdate(DryingRack __instance)
+        {
+            int targetCapacity = StackItem2xFix.Add ? 40 : 20;
+
+            __instance.ItemCapacity = targetCapacity;
+
+            if (__instance.HangAlignments != null && __instance.HangAlignments.Length != targetCapacity)
+            {
+
+                Transform[] originalTransforms = __instance.GetComponentsInChildren<Transform>();
+
+                Transform[] newAlignments = new Transform[targetCapacity];
+
+                for (int i = 0; i < targetCapacity; i++)
+                {
+                    newAlignments[i] = __instance.HangAlignments[i % __instance.HangAlignments.Length];
+                }
+                __instance.HangAlignments = newAlignments;
+            }
+
+            FieldInfo hangSlotsField = AccessTools.Field(typeof(DryingRack), "hangSlots");
+            Array currentHangSlots = (Array)hangSlotsField.GetValue(__instance);
+
+            if (currentHangSlots != null && currentHangSlots.Length != targetCapacity)
+            {
+                Type elementType = currentHangSlots.GetType().GetElementType();
+                Array newHangSlots = Array.CreateInstance(elementType, targetCapacity);
+
+                int itemsToCopy = Math.Min(currentHangSlots.Length, targetCapacity);
+                Array.Copy(currentHangSlots, newHangSlots, itemsToCopy);
+
+                if (targetCapacity > currentHangSlots.Length)
+                {
+                    for (int i = currentHangSlots.Length; i < targetCapacity; i++)
+                    {
+                        object newSlot = Activator.CreateInstance(elementType);
+                        newHangSlots.SetValue(newSlot, i);
+                    }
+                }
+
+                hangSlotsField.SetValue(__instance, newHangSlots);
+            }
+
+            __instance.RefreshHangingVisuals();
         }
     }
 
@@ -494,7 +574,7 @@ namespace SkillTree.SkillPatchOperations
             int originalBase; // Valor base da planta
             originalBase = (int)traverse.Field("BaseYieldQuantity").GetValue();
 
-            if (Mathf.Approximately(currentMultiplier, 1.0f) && YieldAdd.Add != 0)
+            if (Mathf.Approximately(currentMultiplier, 1.0f) && YieldAdd.Add != 0 && originalBase == 12)
             {
                 originalBase =  (int)traverse.Field("BaseYieldQuantity").GetValue();
                 int finalBase = originalBase + YieldAdd.Add; 
@@ -506,4 +586,54 @@ namespace SkillTree.SkillPatchOperations
                 traverse.Field("BaseYieldQuantity").SetValue(12);
         }
     }
+
+    /// <summary>
+    /// INCREASE QUALITY METH
+    /// </summary>
+    /// 
+    public static class MethQualityAdd
+    {
+        public static bool Add = false;
+    }
+
+    [HarmonyPatch(typeof(ChemistryStation), "FinalizeOperation")]
+    public static class ChemistryStation_QualityPatch
+    {
+        private static readonly HashSet<int> processedOperations = new HashSet<int>();
+
+        [HarmonyPrefix]
+        public static void Prefix(ChemistryStation __instance)
+        {
+            if (!FishNet.InstanceFinder.IsServer) return;
+
+            var op = __instance.CurrentCookOperation;
+            if (op == null) return;
+
+            int opId = op.GetHashCode();
+
+            if (processedOperations.Contains(opId)) return;
+
+            if (MethQualityAdd.Add)
+            {
+                EQuality current = op.ProductQuality;
+
+                if (current < EQuality.Heavenly)
+                {
+                    op.ProductQuality = current + 1;
+                    MelonLogger.Msg($"Quality of Chemistry enhanced for: {op.ProductQuality}");
+
+                    processedOperations.Add(opId);
+
+                    MelonCoroutines.Start(CleanUp(opId));
+                }
+            }
+        }
+
+        private static System.Collections.IEnumerator CleanUp(int id)
+        {
+            yield return new WaitForSeconds(1f);
+            processedOperations.Remove(id);
+        }
+    }
+
 }
