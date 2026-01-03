@@ -154,9 +154,9 @@ namespace SkillTree
             int currentTier = levelManager.Tier - 1;
 
             int maxPointsPossible = (currentRank * 6) + currentTier;
-            MelonLogger.Msg("maxPointsPossible " + maxPointsPossible);
+            //MelonLogger.Msg("maxPointsPossible " + maxPointsPossible);
             int maxPointsJson = skillData.StatsPoints + skillData.OperationsPoints + skillData.SocialPoints + skillData.UsedSkillPoints;
-            MelonLogger.Msg("maxPointsJson " + maxPointsJson);
+            //MelonLogger.Msg("maxPointsJson " + maxPointsJson);
 
             if (maxPointsPossible != maxPointsJson && !levelUp)
             {

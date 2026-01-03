@@ -1,0 +1,7 @@
+{
+  "name": "SkillTree",
+  "version": "1.0.0",
+  "description": "Create a Skilltree system in Schedule I",
+  "main": "skilltree.dll",
+  "author": "CrazyReizor"
+}
