@@ -78,13 +78,13 @@ namespace SkillTree.SkillEffect
                 case "MoreXP":
                     {
                         SkillPatchStats.PlayerXPConfig.XpBase = 100f + (data.MoreXP * 5f);
-                        MelonLogger.Msg($"XP Base atualizada para: {SkillPatchStats.PlayerXPConfig.XpBase}%");
+                        MelonLogger.Msg($"XP Base updated for: {SkillPatchStats.PlayerXPConfig.XpBase}%");
                         break;
                     }
                 case "MoreXP2":
                     {
                         SkillPatchStats.PlayerXPConfig.XpBase = 100f + ((data.MoreXP + data.MoreXP2) * 5f);
-                        MelonLogger.Msg($"XP Base atualizada para: {SkillPatchStats.PlayerXPConfig.XpBase}%");
+                        MelonLogger.Msg($"XP Base updated for: {SkillPatchStats.PlayerXPConfig.XpBase}%");
                         break;
                     }
                 case "BetterDelivery":
