@@ -158,4 +158,6 @@ A: This happens if the JSON file and your save go out of sync (e.g., closing wit
 
 ---
 
-<center>If you liked it, please **endorse** this mod and, if you're feeling generous, consider **buying me a coffee**! ☕</center>
+<img width="213" height="217" alt="Paypal" src="https://github.com/user-attachments/assets/09358efc-bc2c-4863-9706-b47e22b7e34c" />
+
+If you liked it, please **endorse** this mod and, if you're feeling generous, consider **buying me a coffee**! ☕
