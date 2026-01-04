@@ -69,7 +69,6 @@ namespace SkillTree.SkillEffect
 
                             if (StackCache.ItemStack.TryGetValue(key, out int baseMin))
                             {
-                                int stackLimit = item.StackLimit;
                                 item.StackLimit = baseMin * multiplier;
                                 MelonLogger.Msg($"[MoreStackItem] {key}: {baseMin} -> {item.StackLimit}");
                             }

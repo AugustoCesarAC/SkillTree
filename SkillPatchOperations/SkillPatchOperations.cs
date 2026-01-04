@@ -394,7 +394,7 @@ namespace SkillTree.SkillPatchOperations
                 else if (potName.Equals("Plastic Pot")) baseQuality = 0.26f;
                 else if (potName.Equals("Moisture-Preserving Pot")) baseQuality = 0.36f;
                 else if (potName.Equals("Air Pot")) baseQuality = 0.5f;
-                else baseQuality = 0.1f; 
+                else baseQuality = 0.1f;
 
                 float finalQuality = baseQuality + QualityUP.Add;
 
@@ -410,7 +410,7 @@ namespace SkillTree.SkillPatchOperations
                             MelonLogger.Msg("No initial additives found for instant growth");
                         else
                         {
-                            /*float delta = 0f;
+                            //float delta = 0f;
                             foreach (var additive in additives)
                             {
                                 if (additive == null)
@@ -418,7 +418,7 @@ namespace SkillTree.SkillPatchOperations
 
                                 MelonLogger.Msg("Additive Name: " + additive.Name.ToString().ToLower());
 
-                                switch (additive.Name.ToString().ToLower().Trim())
+                                /*switch (additive.Name.ToString().ToLower().Trim())
                                 {
                                     case "fertilizer":
                                         delta = +0.3f;
@@ -437,25 +437,21 @@ namespace SkillTree.SkillPatchOperations
                                 finalQuality += delta;
                                 MelonLogger.Msg($"[SkillTree] Change Quality {finalQuality} | Additive: {additive.Name.ToString().ToLower().Trim()}");*/
 
-                                if (additive.InstantGrowth > 0f && __instance.NormalizedGrowthProgress < 0.5f)
-                                {
-                                    float before = __instance.NormalizedGrowthProgress;
+                            if (additive.InstantGrowth > 0f && __instance.NormalizedGrowthProgress < 0.5f)
+                            {
+                                float before = __instance.NormalizedGrowthProgress;
 
-                                    __instance.SetNormalizedGrowthProgress(
-                                        before + additive.InstantGrowth
-                                    );
+                                __instance.SetNormalizedGrowthProgress(before + additive.InstantGrowth);
 
-                                    MelonLogger.Msg(
-                                        $"Instant growth applied: +{additive.InstantGrowth} (from {before} to {__instance.NormalizedGrowthProgress})"
-                                    );
-                                }
-
-                                if (finalQuality < 0.27f && finalQuality > 0.17f)
-                                    finalQuality = 0.27f;
+                                MelonLogger.Msg($"Instant growth applied: +{additive.InstantGrowth} (from {before} to {__instance.NormalizedGrowthProgress})");
                             }
+
+                            /*if (finalQuality < 0.27f && finalQuality > 0.17f)
+                                finalQuality = 0.27f;*/
                         }
                     }
                 }
+            } 
 
                 var traverse = Traverse.Create(__instance);
                 traverse.Field("QualityLevel").SetValue(finalQuality);
