@@ -172,7 +172,7 @@ namespace SkillTree.SkillPatchOperations
         public static int TimeAjust = 1;
     }
 
-    [HarmonyPatch(typeof(MixingStation))] // Certifique-se que o nome da classe é MixStation
+    [HarmonyPatch(typeof(MixingStation))] 
     public static class MixStationPatch
     {
         [HarmonyPatch("GetMixQuantity")]
@@ -183,11 +183,15 @@ namespace SkillTree.SkillPatchOperations
 
             if (__instance.ProductSlot == null || __instance.MixerSlot == null) return;
 
+            //__instance.MaxMixQuantity = __instance.MaxMixQuantity * MixOutputAdd.Add;
+
             int qtyProduct = __instance.ProductSlot.Quantity;
             int qtyMixer = __instance.MixerSlot.Quantity;
-            int originalMax = Mathf.Min(Mathf.Min(qtyProduct, qtyMixer), __instance.MaxMixQuantity);
+            int maxMix = __instance.MaxMixQuantity;
+            int originalMax = Mathf.Min(Mathf.Min(qtyProduct, qtyMixer), (__instance.MaxMixQuantity * MixOutputAdd.Add));
 
-            __result = originalMax * MixOutputAdd.Add;
+            __result = originalMax;// * MixOutputAdd.Add;
+
         }
     }
 

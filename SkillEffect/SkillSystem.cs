@@ -148,7 +148,7 @@ namespace SkillTree.SkillEffect
 
                 case "MoreMixAndDryingRackOutput":
                     SkillPatchOperations.StackItem2xFix.Add = true;
-                    SkillPatchOperations.MixOutputAdd.Add = (data.MoreMixAndDryingRackOutput * 2);
+                    SkillPatchOperations.MixOutputAdd.Add = (data.MoreMixAndDryingRackOutput * 2) == 0 ? 1 : (data.MoreMixAndDryingRackOutput * 2);
                     break;
 
                 case "ChemistStationQuick":
