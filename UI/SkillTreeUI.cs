@@ -1,5 +1,7 @@
-﻿using SkillTree.Json;
+﻿using MelonLoader;
+using SkillTree.Json;
 using SkillTree.SkillEffect;
+using SkillTree.SkillsJson;
 using System.Reflection;
 using UnityEngine;
 
@@ -13,6 +15,8 @@ namespace SkillTree.UI
         private SkillTreeData editData;
         private SkillCategory? selectedCategory = null;
 
+        private SkillConfig settings;
+        public bool isRebinding = false;
 
         public bool Visible { get; set; }
 
@@ -39,10 +43,11 @@ namespace SkillTree.UI
         // =========================
         // Constructor
         // =========================
-        public SkillTreeUI(SkillTreeData data)
+        public SkillTreeUI(SkillTreeData data, SkillConfig sharedConfig)
         {
             originalData = data;
             editData = Clone(data);
+            this.settings = sharedConfig;
             BuildSkillMap();
         }
 
@@ -101,8 +106,40 @@ namespace SkillTree.UI
 
             GUILayout.FlexibleSpace();
 
-            GUILayout.BeginHorizontal();
-            GUILayout.EndHorizontal();
+            GUILayout.BeginVertical("box");
+            string buttonLabel = isRebinding ? "<Color=yellow>Press any key... (ESC to cancel)</Color>" : $"Menu Hotkey: {settings.MenuHotkey}";
+
+            if (GUILayout.Button(buttonLabel, new GUILayoutOption[] { GUILayout.Height(30) }))
+            {
+                isRebinding = true;
+                MelonLogger.Msg("[SkillTree] Rebinding started. Waiting for input...");
+            }
+
+            GUILayout.EndVertical();
+
+            if (isRebinding)
+            {
+                Event e = Event.current;
+
+                if (e.isKey && e.type == EventType.KeyDown)
+                {
+                    if (e.keyCode == KeyCode.Escape)
+                    {
+                        isRebinding = false;
+                        MelonLogger.Msg("[SkillTree] Rebinding cancelled by user.");
+                    }
+                    else if (e.keyCode != KeyCode.None)
+                    {
+                        settings.MenuHotkey = e.keyCode;
+
+                        SkillTreeSaveManager.SaveConfig(settings);
+
+                        isRebinding = false;
+                        MelonLogger.Msg($"[SkillTree] Hotkey successfully changed to: {settings.MenuHotkey}");
+                    }
+                    e.Use();
+                }
+            }
 
             GUI.DragWindow();
         }

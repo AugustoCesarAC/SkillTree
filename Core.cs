@@ -13,6 +13,7 @@ using ScheduleOne.UI.Phone;
 using ScheduleOne.UI.Phone.Delivery;
 using SkillTree.Json;
 using SkillTree.SkillEffect;
+using SkillTree.SkillsJson;
 using SkillTree.UI;
 using UnityEngine;
 
@@ -37,6 +38,7 @@ namespace SkillTree
         private float timer = 2f;
 
         private SkillTreeData skillData;
+        private SkillConfig skillConfig;
         private SkillTreeUI skillTreeUI;
         private int skillPointValid = 0;
 
@@ -94,7 +96,7 @@ namespace SkillTree
 
             bool treeUiChange = false;
 
-            if (Input.GetKeyDown(KeyCode.C) && waiting)
+            if (Input.GetKeyDown(skillConfig.MenuHotkey) && waiting)
             {
                 skillTreeUI.Visible = !skillTreeUI.Visible;
                 treeUiChange = true;
@@ -132,7 +134,8 @@ namespace SkillTree
                 if (timeManager == null || levelManager == null || playerMovement == null)
                     Init();
                 skillData = SkillTreeSaveManager.LoadOrCreate();
-                skillTreeUI = new SkillTreeUI(skillData);
+                skillConfig = SkillTreeSaveManager.LoadConfig();
+                skillTreeUI = new SkillTreeUI(skillData, skillConfig);
                 SkillSystem.ApplyAll(skillData);
             }
 
@@ -169,7 +172,8 @@ namespace SkillTree
                 if (File.Exists(path))
                     File.Delete(path);
                 skillData = SkillTreeSaveManager.LoadOrCreate();
-                skillTreeUI = new SkillTreeUI(skillData);
+                skillConfig = SkillTreeSaveManager.LoadConfig();
+                skillTreeUI = new SkillTreeUI(skillData, skillConfig);
                 SkillSystem.ApplyAll(skillData);
                 skillPointValid = maxPointsPossible;
             }
@@ -222,7 +226,7 @@ namespace SkillTree
                 }
 
                 if (skillTreeUI == null)
-                    skillTreeUI = new SkillTreeUI(skillData);
+                    skillTreeUI = new SkillTreeUI(skillData, skillConfig);
 
                 if (skillTreeUI != null)
                     skillTreeUI.AddPoints(statsGained, opsGained, socialGained);

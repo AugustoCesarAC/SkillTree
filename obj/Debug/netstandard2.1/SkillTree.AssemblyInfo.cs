@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SkillTree")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+25f384eb1f4b8da4227b6e52c2f02bd7d1d2204b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+30be299dc9cc66243cafa6ba2770011dbcab86b8")]
 [assembly: System.Reflection.AssemblyProductAttribute("SkillTree")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SkillTree")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

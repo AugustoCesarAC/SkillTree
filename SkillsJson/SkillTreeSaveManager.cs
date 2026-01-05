@@ -1,14 +1,18 @@
 ﻿using MelonLoader;
 using MelonLoader.Utils;
+using Newtonsoft.Json;
 using ScheduleOne.DevUtilities;
 using ScheduleOne.Persistence;
 using SkillTree.SkillPatchSocial;
+using SkillTree.SkillsJson;
 using UnityEngine;
 
 namespace SkillTree.Json
 {
     public static class SkillTreeSaveManager
     {
+        private static string ConfigPath => Path.Combine(MelonEnvironment.UserDataDirectory, "SkillTree_Config.json");
+
         public static string GetDynamicPath()
         {
             string saveID = GetCurrentSaveID();
@@ -56,6 +60,31 @@ namespace SkillTree.Json
                 return "DefaultPlayer";
 
             return Path.GetFileName(fullPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+        }
+
+        public static SkillConfig LoadConfig()
+        {
+            if (!File.Exists(ConfigPath))
+            {
+                var newConfig = new SkillConfig();
+                SaveConfig(newConfig);
+                return newConfig;
+            }
+            try
+            {
+                string json = File.ReadAllText(ConfigPath);
+                return JsonConvert.DeserializeObject<SkillConfig>(json);
+            }
+            catch
+            {
+                return new SkillConfig();
+            }
+        }
+
+        public static void SaveConfig(SkillConfig config)
+        {
+            string json = JsonConvert.SerializeObject(config, Formatting.Indented);
+            File.WriteAllText(ConfigPath, json);
         }
     }
 }
