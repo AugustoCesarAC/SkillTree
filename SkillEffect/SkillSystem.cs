@@ -56,8 +56,11 @@ namespace SkillTree.SkillEffect
 
                 case "MoreStackItem":
                     {
-                        QuickPackagers.Add = true;
+                        QuickPackagers.Add = (data.MoreStackItem == 1);
                         if (registry == null) return;
+
+                        if (!(data.MoreStackItem == 1))
+                            return;
 
                         StackCache.FillCache(allItems);
 
@@ -147,7 +150,7 @@ namespace SkillTree.SkillEffect
                     break;
 
                 case "MoreMixAndDryingRackOutput":
-                    SkillPatchOperations.StackItem2xFix.Add = true;
+                    SkillPatchOperations.StackItem2xFix.Add = (data.MoreMixAndDryingRackOutput == 1);
                     SkillPatchOperations.MixOutputAdd.Add = (data.MoreMixAndDryingRackOutput * 2) == 0 ? 1 : (data.MoreMixAndDryingRackOutput * 2);
                     break;
 
