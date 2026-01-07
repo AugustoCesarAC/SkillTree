@@ -66,17 +66,20 @@ namespace SkillTree.SkillEffect
 
                         int multiplier = 1 + (data.MoreStackItem);
 
-                        foreach (ItemDefinition item in allItems)
+                        if(multiplier > 1)
                         {
-                            string key = item.name;
-
-                            if (StackCache.ItemStack.TryGetValue(key, out int baseMin))
+                            foreach (ItemDefinition item in allItems)
                             {
-                                item.StackLimit = baseMin * multiplier;
-                                MelonLogger.Msg($"[MoreStackItem] {key}: {baseMin} -> {item.StackLimit}");
+                                string key = item.name;
+
+                                if (StackCache.ItemStack.TryGetValue(key, out int baseMin))
+                                {
+                                    item.StackLimit = baseMin * multiplier;
+                                    MelonLogger.Msg($"[MoreStackItem] {key}: {baseMin} -> {item.StackLimit}");
+                                }
                             }
+                            MelonLogger.Msg($"Skill Item Stack x2 Active");
                         }
-                        MelonLogger.Msg($"Skill Item Stack x2 Active");
                         break;
                     }
                 case "MoreXP":
@@ -134,17 +137,12 @@ namespace SkillTree.SkillEffect
 
                 case "MoreQuality":
                     SkillPatchOperations.QualityUP.Add = (data.MoreQuality * 0.15f);
+                    SkillPatchOperations.QualityMushroomUP.Add = (data.MoreQuality == 2 ? 0.3f : 0f);
                     break;
 
-                case "MoreQualityMeth":
-                    SkillPatchOperations.MethQualityAdd.Add = (data.MoreQualityMeth == 1);
+                case "MoreQualityMethCoca":
+                    SkillPatchOperations.MethQualityAdd.Add = (data.MoreQualityMethCoca == 1);
                     break;
-
-                case "MoreQualityMushroom":
-                    SkillPatchOperations.QualityMushroomUP.Add = (data.MoreQualityMushroom == 1 ? 0.3f : 0f);
-                    MelonLogger.Msg($"[Quality] Base: Standard | Boosted: Premium");
-                    break;
-
                 case "AbsorbentSoil":
                     SkillPatchOperations.AbsorbentSoil.Add = (data.AbsorbentSoil == 1);
                     break;
@@ -177,20 +175,23 @@ namespace SkillTree.SkillEffect
                         CustomerCache.FillCache(customerList.ToList());
                         float multiplier = 1.0f + (data.CityEvolving * 0.10f);
 
-                        foreach (Customer customer in customerList)
+                        if (multiplier > 1.0f)
                         {
-                            string key = customer.CustomerData.name;
-
-                            if (CustomerCache.OriginalMinSpend.TryGetValue(key, out float baseMin) &&
-                                CustomerCache.OriginalMaxSpend.TryGetValue(key, out float baseMax))
+                            foreach (Customer customer in customerList)
                             {
-                                customer.CustomerData.MinWeeklySpend = baseMin * multiplier;
-                                customer.CustomerData.MaxWeeklySpend = baseMax * multiplier;
+                                string key = customer.CustomerData.name;
 
-                                //MelonLogger.Msg($"[CityEvolving] {key}: {baseMin} -> {customer.CustomerData.MinWeeklySpend}");
+                                if (CustomerCache.OriginalMinSpend.TryGetValue(key, out float baseMin) &&
+                                    CustomerCache.OriginalMaxSpend.TryGetValue(key, out float baseMax))
+                                {
+                                    customer.CustomerData.MinWeeklySpend = baseMin * multiplier;
+                                    customer.CustomerData.MaxWeeklySpend = baseMax * multiplier;
+
+                                    //MelonLogger.Msg($"[CityEvolving] {key}: {baseMin} -> {customer.CustomerData.MinWeeklySpend}");
+                                }
                             }
+                            MelonLogger.Msg($"Weekly spend incresed by {1.0f + (data.CityEvolving * 0.15f)}%");
                         }
-                        MelonLogger.Msg($"Weekly spend incresed by {1.0f + (data.CityEvolving * 0.15f)}%");
                     }
                     break;
 
@@ -199,18 +200,21 @@ namespace SkillTree.SkillEffect
                         BusinessCache.FillCache(businessList.ToList());
                         float multiplier = 1.0f + (data.BusinessEvolving * 0.20f);
 
-                        foreach (Business business in businessList)
+                        if (multiplier > 1.0f)
                         {
-                            string key = business.PropertyName;
-
-                            if (BusinessCache.LaunderCapacity.TryGetValue(key, out float baseMin))
+                            foreach (Business business in businessList)
                             {
-                                float oldCapacity = business.LaunderCapacity;
-                                business.LaunderCapacity = baseMin * multiplier;
-                                MelonLogger.Msg($"[BusinessEvolving] {key}: {baseMin} -> {business.LaunderCapacity}");
+                                string key = business.PropertyName;
+
+                                if (BusinessCache.LaunderCapacity.TryGetValue(key, out float baseMin))
+                                {
+                                    float oldCapacity = business.LaunderCapacity;
+                                    business.LaunderCapacity = baseMin * multiplier;
+                                    MelonLogger.Msg($"[BusinessEvolving] {key}: {baseMin} -> {business.LaunderCapacity}");
+                                }
                             }
+                            MelonLogger.Msg($"LaunderCapacity incresed by {1.0f + (data.BusinessEvolving * 0.20f)}%");
                         }
-                        MelonLogger.Msg($"LaunderCapacity incresed by {1.0f + (data.BusinessEvolving * 0.20f)}%");
                     }
                     break;
                 case "MoreATMLimit":
@@ -245,7 +249,7 @@ namespace SkillTree.SkillEffect
                     }
                 case "DealerMoreCustomer":
                     {
-                        SkillPatchSocial.DealerUpCustomer.MaxCustomer += (data.DealerMoreCustomer * 2);
+                        SkillPatchSocial.DealerUpCustomer.MaxCustomer = 8 + (data.DealerMoreCustomer * 2);
                         MelonLogger.Msg($"Dealer MaxCustomer: {SkillPatchSocial.DealerUpCustomer.MaxCustomer}");
                         break;
                     }

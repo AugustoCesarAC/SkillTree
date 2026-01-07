@@ -119,8 +119,8 @@ namespace SkillTree
                 treeUiChange = false;
                 Cursor.lockState = skillTreeUI.Visible ? CursorLockMode.None : CursorLockMode.Locked;
                 Cursor.visible = skillTreeUI.Visible ? true : false;
-                PlayerMovement.Instance.CanMove = !skillTreeUI.Visible;
-                PlayerCamera.Instance.enabled = !skillTreeUI.Visible;
+                playerMovement.CanMove = !skillTreeUI.Visible;
+                playerCamera.enabled = !skillTreeUI.Visible;
                 PlayerManager.Instance.enabled = !skillTreeUI.Visible;
                 playerInventory.SetInventoryEnabled(!skillTreeUI.Visible);
             }
@@ -136,7 +136,6 @@ namespace SkillTree
                 skillData = SkillTreeSaveManager.LoadOrCreate();
                 skillConfig = SkillTreeSaveManager.LoadConfig();
                 skillTreeUI = new SkillTreeUI(skillData, skillConfig);
-                SkillSystem.ApplyAll(skillData);
             }
 
             firstTime = true;
@@ -145,6 +144,7 @@ namespace SkillTree
             if (timer <= 0f)
             {
                 ItemUnlocker.UnlockSpecificItems();
+                SkillSystem.ApplyAll(skillData);
                 AttPoints();
                 waiting = true;
                 return true;

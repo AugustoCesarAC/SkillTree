@@ -70,16 +70,16 @@ namespace SkillTree.Json
         public int MoreYield = 0;
 
         // Operations subs
-        [Skill("Advanced Pot Techniques", "+15% Quality. [Lvl 1] Moisture Pots gain +1 Tier. [Max Lvl] All Pots gain +1 Tier.", SkillCategory.Operations, "MoreYield", 2)]
+        [Skill("Advanced Pot Techniques", "+15% Quality. [Lvl 1] Plastic/Moisture Pots gain +1 Tier. [Max Lvl] All Pots/Shroom gain +1 Tier.", SkillCategory.Operations, "MoreYield", 2)]
         public int MoreQuality = 0;
 
         // Operations subs
-        [Skill("More Quality Mushroom", "Upgrade Mushroom Quality Tier", SkillCategory.Operations, "MoreQuality", 1)]
-        public int MoreQualityMushroom = 0;
+        //[Skill("More Quality Mushroom", "Upgrade Mushroom Quality Tier", SkillCategory.Operations, "MoreQuality", 1)]
+        //public int MoreQualityMushroom = 0;
 
         // Operations subs
-        [Skill("More Quality Meth", "Upgrade Meth Quality Tier", SkillCategory.Operations, "MoreYield", 1)]
-        public int MoreQualityMeth = 0;
+        [Skill("More Quality Meth/Coca", "Upgrade Meth/Coca Quality Tier When Shatter", SkillCategory.Operations, "MoreYield", 1)]
+        public int MoreQualityMethCoca = 0;
 
         // Operations subs
         [Skill("Increase Growth Speed 2°", "Increase Growth Speed by 2.5%", SkillCategory.Operations, "MoreQuality", 2)]

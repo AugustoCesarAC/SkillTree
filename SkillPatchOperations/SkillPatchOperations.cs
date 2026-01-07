@@ -396,7 +396,7 @@ namespace SkillTree.SkillPatchOperations
                 float currentQuality = __instance.QualityLevel;
 
                 if (potName.Equals("Grow Tent")) baseQuality = 0.1f + BetterGrowTent.Add;
-                else if (potName.Equals("Plastic Pot")) baseQuality = 0.26f;
+                else if (potName.Equals("Plastic Pot")) baseQuality = 0.36f;
                 else if (potName.Equals("Moisture-Preserving Pot")) baseQuality = 0.36f;
                 else if (potName.Equals("Air Pot")) baseQuality = 0.5f;
                 else baseQuality = 0.1f;
