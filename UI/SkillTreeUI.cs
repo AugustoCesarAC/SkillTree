@@ -9,7 +9,7 @@ namespace SkillTree.UI
 {
     public class SkillTreeUI
     {
-        private Rect windowRect = new Rect(300, 150, 550, 450);
+        private Rect windowRect = new Rect(300, 150, 600, 450);
 
         private SkillTreeData originalData;
         private SkillTreeData editData;

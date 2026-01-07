@@ -144,7 +144,7 @@ namespace SkillTree
             if (timer <= 0f)
             {
                 ItemUnlocker.UnlockSpecificItems();
-                SkillSystem.ApplyAll(skillData);
+                ValidSave();
                 AttPoints();
                 waiting = true;
                 return true;
@@ -159,24 +159,6 @@ namespace SkillTree
 
             int currentRank = (int)levelManager.Rank;
             int currentTier = levelManager.Tier - 1;
-
-            int maxPointsPossible = (currentRank * 6) + currentTier;
-            //MelonLogger.Msg("maxPointsPossible " + maxPointsPossible);
-            int maxPointsJson = skillData.StatsPoints + skillData.OperationsPoints + skillData.SocialPoints + skillData.UsedSkillPoints;
-            //MelonLogger.Msg("maxPointsJson " + maxPointsJson);
-
-            if (maxPointsPossible != maxPointsJson && !levelUp)
-            {
-                MelonLogger.Msg("Desync detected! Synchronizing points with saved XP in the game...");
-                string path = SkillTreeSaveManager.GetDynamicPath();
-                if (File.Exists(path))
-                    File.Delete(path);
-                skillData = SkillTreeSaveManager.LoadOrCreate();
-                skillConfig = SkillTreeSaveManager.LoadConfig();
-                skillTreeUI = new SkillTreeUI(skillData, skillConfig);
-                SkillSystem.ApplyAll(skillData);
-                skillPointValid = maxPointsPossible;
-            }
 
             if (currentRank == 0 && currentTier == 0)
                 return;
@@ -232,6 +214,33 @@ namespace SkillTree
                     skillTreeUI.AddPoints(statsGained, opsGained, socialGained);
 
                 MelonLogger.Msg($"[SkillTree] Processed: Rank {levelManager.Rank} Tier {levelManager.Tier}. Gains: Stats+{statsGained} Operations+{opsGained} Social+{socialGained}");
+            }
+        }
+
+        private void ValidSave()
+        {
+            if (timeManager == null || levelManager == null || playerMovement == null)
+                Init();
+
+            int currentRank = (int)levelManager.Rank;
+            int currentTier = levelManager.Tier - 1;
+
+            int maxPointsPossible = (currentRank * 6) + currentTier;
+            //MelonLogger.Msg("maxPointsPossible " + maxPointsPossible);
+            int maxPointsJson = skillData.StatsPoints + skillData.OperationsPoints + skillData.SocialPoints + skillData.UsedSkillPoints;
+            //MelonLogger.Msg("maxPointsJson " + maxPointsJson);
+
+            if (maxPointsPossible != maxPointsJson)
+            {
+                MelonLogger.Msg("Desync detected! Synchronizing points with saved XP in the game...");
+                string path = SkillTreeSaveManager.GetDynamicPath();
+                if (File.Exists(path))
+                    File.Delete(path);
+                skillData = SkillTreeSaveManager.LoadOrCreate();
+                skillConfig = SkillTreeSaveManager.LoadConfig();
+                skillTreeUI = new SkillTreeUI(skillData, skillConfig);
+                SkillSystem.ApplyAll(skillData);
+                skillPointValid = maxPointsPossible;
             }
         }
 
