@@ -28,7 +28,7 @@ namespace SkillTree.Json
         public int MoreXP = 0;
 
         // MoreXP subs
-        [Skill("More Item Stack (x2)", "Increase Item Stack (x2)", SkillCategory.Stats, "MoreXP", 1)]
+        [Skill("More Item Stack (x2)", "Increase Item Stack (x2)", SkillCategory.Stats, "Stats", 1)]
         public int MoreStackItem = 0;
 
         // MoreXP subs
@@ -36,7 +36,7 @@ namespace SkillTree.Json
         public int MoreXPWhenEarnMoney = 0;
 
         // Stats subs
-        [Skill("Better Delivery", "Make Deliveries More Fast (6H -> 2H)", SkillCategory.Stats, "Stats", 1)]
+        [Skill("Better Delivery", "Make Deliveries Faster (6H -> 2H)", SkillCategory.Stats, "Stats", 1)]
         public int BetterDelivery = 0;
 
         // Stats subs
@@ -66,11 +66,11 @@ namespace SkillTree.Json
         public int GrowthSpeed = 0;
 
         // Operations subs
-        [Skill("More Yield", "Increase Yield by 1 (Excludes Mushrooms/Grow Tents)", SkillCategory.Operations, "GrowthSpeed", 1)]
+        [Skill("More Yield", "Increase Yield by 1 (Excludes Mushrooms/Grow Tents)", SkillCategory.Operations, "Operations", 1)]
         public int MoreYield = 0;
 
         // Operations subs
-        [Skill("Advanced Pot Techniques", "+15% Quality. [Lvl 1] Plastic/Moisture Pots gain +1 Tier. [Max Lvl] All Pots/Shroom gain +1 Tier.", SkillCategory.Operations, "MoreYield", 2)]
+        [Skill("Advanced Pot Techniques", "+15% Quality. [Lvl 1] Plastic/Moisture Pots gain +1 Tier. [Max Lvl] Air Pot/Shroom gain +1 Tier.", SkillCategory.Operations, "Operations", 2)]
         public int MoreQuality = 0;
 
         // Operations subs
@@ -78,7 +78,7 @@ namespace SkillTree.Json
         //public int MoreQualityMushroom = 0;
 
         // Operations subs
-        [Skill("More Quality Meth/Coca", "Upgrade Meth/Coca Quality Tier When Shatter", SkillCategory.Operations, "MoreYield", 1)]
+        [Skill("More Quality Meth/Coca", "Upgrade Meth/Coca Quality Tier When Shatter", SkillCategory.Operations, "Operations", 1)]
         public int MoreQualityMethCoca = 0;
 
         // Operations subs
@@ -86,19 +86,19 @@ namespace SkillTree.Json
         public int GrowthSpeed2 = 0;
 
         // MoreMixOutput subs
-        [Skill("Chemist Station Quick", "Increase the speed of ALL Chemistry Station (x2 or a little more)", SkillCategory.Operations, "MoreYield", 1)]
+        [Skill("Chemist Station Quick", "Increase the speed of ALL Chemistry Station (x2 or a little more)", SkillCategory.Operations, "Operations", 1)]
         public int ChemistStationQuick = 0;
 
         // Operations subs
-        [Skill("More Mix and Drying Rack Output", "Double Mix and Drying Rack Output", SkillCategory.Operations, "ChemistStationQuick", 1)]
+        [Skill("More Mix and Drying Rack Output", "Double Mix and Drying Rack Output", SkillCategory.Operations, "Operations", 1)]
         public int MoreMixAndDryingRackOutput = 0;
 
         // Operations subs
-        [Skill("AbsorbentSoil", "Preserve soil additives", SkillCategory.Operations, "ChemistStationQuick", 1)]
+        [Skill("AbsorbentSoil", "Preserve soil additives", SkillCategory.Operations, "Operations", 1)]
         public int AbsorbentSoil = 0;
 
         // MoreMixOutput subs
-        [Skill("More Cauldron Output", "Double Cauldron Output", SkillCategory.Operations, "MoreMixAndDryingRackOutput", 1)]
+        [Skill("More Cauldron Output", "Double Cauldron Output", SkillCategory.Operations, "ChemistStationQuick", 1)]
         public int MoreCauldronOutput = 0;
 
         /* OPERATIONS END HERE */
@@ -109,11 +109,11 @@ namespace SkillTree.Json
         public int Social = 0;
 
         // Social subs
-        [Skill("Civil More Money per week", "Increase Citizens' weekly money by 10%", SkillCategory.Social, "Social", 2)]
+        [Skill("Civilian More Money per week", "Increase Citizens' weekly money by 10%", SkillCategory.Social, "Social", 2)]
         public int CityEvolving = 0;
 
         // Social subs
-        [Skill("More ATM Limit", "Increase ATM Deposit Limit by +1500", SkillCategory.Social, "Social", 4)]
+        [Skill("More ATM Limit", "Increase ATM Deposit Limit by +2500", SkillCategory.Social, "Social", 2)]
         public int MoreATMLimit = 0;
 
         // MoreATMLimit subs

@@ -470,55 +470,6 @@ namespace SkillTree.SkillPatchOperations
         }
     }
 
-    [HarmonyPatch(typeof(Plant), "Initialize")]
-    public static class Plant_Initialize_Patch
-    {
-        static void Postfix(Plant __instance)
-        {
-            try
-            {
-                if (!AbsorbentSoil.Add)
-                    return;
-
-                if (__instance.Pot == null)
-                {
-                    MelonLogger.Warning("Plant.Initialize Postfix: Pot is null");
-                    return;
-                }
-
-                var additives = __instance.Pot.AppliedAdditives;
-                if (additives == null || additives.Count == 0)
-                {
-                    MelonLogger.Msg("No initial additives found for instant growth");
-                    return;
-                }
-
-                foreach (var additive in additives)
-                {
-                    if (additive == null)
-                        continue;
-
-                    if (additive.InstantGrowth > 0f && __instance.NormalizedGrowthProgress < 0.5f)
-                    {
-                        float before = __instance.NormalizedGrowthProgress;
-
-                        __instance.SetNormalizedGrowthProgress(
-                            before + additive.InstantGrowth
-                        );
-
-                        MelonLogger.Msg(
-                            $"Instant growth applied: +{additive.InstantGrowth} (from {before} to {__instance.NormalizedGrowthProgress})"
-                        );
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MelonLogger.Error($"Plant.Initialize Postfix failed: {ex}");
-            }
-        }
-    }
-
     /// <summary>
     /// ADD YIELD FROM PLANTS
     /// </summary>
@@ -572,6 +523,8 @@ namespace SkillTree.SkillPatchOperations
         public static void Prefix(LabOven __instance)
         {
             if (__instance.CurrentOperation == null) return;
+
+            if (!MethQualityAdd.Add) return;
 
             var op = __instance.CurrentOperation;
 

@@ -219,7 +219,7 @@ namespace SkillTree.SkillEffect
                     break;
                 case "MoreATMLimit":
                     {
-                        SkillPatchSocial.ATMConfig.MaxWeeklyLimit = 10000f + (data.MoreATMLimit * 1500);
+                        SkillPatchSocial.ATMConfig.MaxWeeklyLimit = 10000f + (data.MoreATMLimit * 2500);
                         MelonLogger.Msg($"ATM Deposit Weekly Limit: ${SkillPatchSocial.ATMConfig.MaxWeeklyLimit}");
                         break;
                     }
