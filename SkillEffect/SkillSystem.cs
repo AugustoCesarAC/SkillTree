@@ -338,8 +338,6 @@ namespace SkillTree.SkillEffect
             cleanerList = UnityEngine.Object.FindObjectsOfType<Cleaner>();
 
 
-            if (EmployeeMoreStation.Add == 0) return;
-
             foreach (Packager packager in packagerList)
             {
                 if (EmployeeMovespeed.Add)
