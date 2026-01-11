@@ -102,7 +102,6 @@ namespace SkillTree
             {
                 skillTreeUI.Visible = !skillTreeUI.Visible;
                 treeUiChange = true;
-                ValidSkill();
             }
 
             ActiveSkills();
@@ -135,6 +134,7 @@ namespace SkillTree
 
         public void ActiveSkills()
         {
+            ValidSkill();
             if (Input.GetKeyDown(KeyCode.F1) && waiting && SkillEnabled.enabledTrash)
                 ClearTrash();
 
