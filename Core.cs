@@ -102,8 +102,7 @@ namespace SkillTree
             {
                 skillTreeUI.Visible = !skillTreeUI.Visible;
                 treeUiChange = true;
-                MelonLogger.Msg($"Heal HP {localPlayer.Health.CurrentHealth}");
-                SkillActive.SkillActive.ValidSkill();
+                ValidSkill();
             }
 
             ActiveSkills();
@@ -137,13 +136,13 @@ namespace SkillTree
         public void ActiveSkills()
         {
             if (Input.GetKeyDown(KeyCode.F1) && waiting && SkillEnabled.enabledTrash)
-                SkillActive.SkillActive.ClearTrash();
+                ClearTrash();
 
             if (Input.GetKeyDown(KeyCode.F2) && waiting && SkillEnabled.enabledHeal)
-                SkillActive.SkillActive.Heal();
+                Heal();
 
             if (Input.GetKeyDown(KeyCode.F3) && waiting && SkillEnabled.enabledGetCash)
-                SkillActive.SkillActive.GetCashDealer();
+                GetCashDealer();
         }
 
         private bool WaitTime()
@@ -252,10 +251,10 @@ namespace SkillTree
             int currentTier = levelManager.Tier - 1;
 
             int maxPointsPossible = (currentRank * 7) + currentTier;
-            MelonLogger.Msg("maxPointsPossible " + maxPointsPossible);
+            //MelonLogger.Msg("maxPointsPossible " + maxPointsPossible);
             int maxPointsJson = skillData.StatsPoints + skillData.OperationsPoints + skillData.SocialPoints + skillData.SpecialPoints + skillData.UsedSkillPoints;
             int maxSpecialPossible = currentRank;
-            MelonLogger.Msg("maxPointsJson " + maxPointsJson);
+            //MelonLogger.Msg("maxPointsJson " + maxPointsJson);
 
             if (maxPointsPossible != maxPointsJson)
             {
