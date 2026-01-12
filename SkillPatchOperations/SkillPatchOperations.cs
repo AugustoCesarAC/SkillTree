@@ -29,6 +29,8 @@ namespace SkillTree.SkillPatchOperations
     [HarmonyPatch(typeof(Pot), "OnPlantFullyHarvested")]
     public static class Pot_OnPlantFullyHarvested_Patch
     {
+        private static readonly HashSet<int> processedIds = new HashSet<int>();
+
         static bool Prefix(Pot __instance)
         {
             if (!AbsorbentSoil.Add)
@@ -59,10 +61,15 @@ namespace SkillTree.SkillPatchOperations
 
                 traverse.Property("Plant")?.SetValue(null);
 
+                int id = __instance.GetInstanceID();
+                if (processedIds.Contains(id)) return false;
+
                 int remainingUses = traverse.Field("_remainingSoilUses").GetValue<int>() - 1;
                 __instance.SetRemainingSoilUses(remainingUses);
 
                 __instance.SetSoilState(ESoilState.Flat);
+
+                processedIds.Add(id);
 
                 if (remainingUses <= 0)
                 {
@@ -75,7 +82,7 @@ namespace SkillTree.SkillPatchOperations
                 {
                     MelonLogger.Msg("Soil still usable: additives preserved");
                 }
-
+                MelonCoroutines.Start(CleanUp(id));
                 return false; 
             }
             catch (System.Exception ex)
@@ -83,6 +90,11 @@ namespace SkillTree.SkillPatchOperations
                 MelonLogger.Error($"OnPlantFullyHarvested patch failed: {ex}");
                 return true; 
             }
+        }
+        private static System.Collections.IEnumerator CleanUp(int id)
+        {
+            yield return new WaitForSeconds(2f);
+            processedIds.Remove(id);
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using MelonLoader;
 using S1API.Entities.Schedule;
 using ScheduleOne.Delivery;
+using ScheduleOne.DevUtilities;
 using ScheduleOne.Economy;
 using ScheduleOne.GameTime;
 using ScheduleOne.Levelling;
@@ -8,6 +9,7 @@ using ScheduleOne.Money;
 using ScheduleOne.ObjectScripts;
 using ScheduleOne.PlayerScripts;
 using ScheduleOne.Property;
+using ScheduleOne.UI;
 using ScheduleOne.UI.ATM;
 using ScheduleOne.UI.Phone;
 using ScheduleOne.UI.Phone.Delivery;
@@ -195,6 +197,15 @@ namespace SkillTree
                     skillPointValid = 2;
                     specialSkillPointValid = 1;
                 }
+
+                Singleton<NotificationsManager>.Instance.SendNotification(
+                                "Level Up",
+                                $"<color=#16F01C>+ {skillPointValid} Skill Points</color>", NetworkSingleton<MoneyManager>.Instance.LaunderingNotificationIcon);
+
+                if (specialSkillPointValid > 0)
+                    Singleton<NotificationsManager>.Instance.SendNotification(
+                                    "Special Up",
+                                    $"<color=#16F01C>+ {specialSkillPointValid} Special Points</color>", NetworkSingleton<MoneyManager>.Instance.LaunderingNotificationIcon);
             }
 
             lastProcessedTier = levelManager.Tier;
@@ -231,6 +242,9 @@ namespace SkillTree
 
                 for (int i = 0; i < specialSkillPointValid; i++)
                     specialGained++;
+
+                if (specialSkillPointValid > 0)
+                    specialSkillPointValid = 0;
 
                 if (skillTreeUI == null)
                 skillTreeUI = new SkillTreeUI(skillData, skillConfig);

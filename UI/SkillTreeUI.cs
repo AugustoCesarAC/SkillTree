@@ -212,7 +212,7 @@ namespace SkillTree.UI
 
             GUILayout.Space(depth * 20);
 
-            GUILayout.Label($"{skill.Name} ({value}/{maxLevel})", GUILayout.Width(270));
+            GUILayout.Label($"{skill.Name} ({value}/{maxLevel})", GUILayout.Width(370));
 
             if (value < maxLevel)
             {
